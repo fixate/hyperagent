@@ -81,7 +81,7 @@ Resource.prototype.fetch = function fetch(options) {
   }
 
   return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
-    this._parse(response);
+    this._load(response);
     this.loaded = true;
 
     // Return the agent back.
@@ -111,11 +111,19 @@ Resource.prototype.link = function link(rel, params) {
 };
 
 /**
- * Parses a response string.
+ * Returns the set of resource(s) identified by the given `rel`
+ * (expanding the link template if params are provided).
+ *
+ * Arguments:
+ *  - rel: The rel of the link.
+ *  - params: Optional parameters to expand the link if it is a templated link.
  */
-Resource.prototype._parse = function _parse(response) {
-  var object = JSON.parse(response);
-  this._load(object);
+Resource.prototype.related = function related(rel, params) {
+  if (params || !this.embedded.hasOwnProperty(rel)) {
+    return this.link(rel, params);
+  } else {
+    return this.embedded[rel];
+  }
 };
 
 /**

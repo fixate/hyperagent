@@ -11,8 +11,7 @@ function loadAjax(options) {
   }
   config.ajax(config._.extend({
     success: deferred.resolve,
-    error: deferred.reject,
-    dataType: 'html'  // We don't want auto-converting
+    error: deferred.reject
   }, options));
 
   return deferred.promise;

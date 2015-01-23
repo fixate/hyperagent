@@ -22,7 +22,7 @@
     });
 
     it('should successfully parse a sample response', function (done) {
-      this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
+      this.ajaxResponses.push(fixtures.fullDoc);
 
       var agent = new Hyperagent.Resource('https://example.com');
       assert.equal(this.ajaxCalls.length, 0);
@@ -39,8 +39,8 @@
     });
 
     it('should fetch a linked resource on demand', function (done) {
-      this.ajaxResponses.push(JSON.stringify(fixtures.subDoc));
-      this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
+      this.ajaxResponses.push(fixtures.subDoc);
+      this.ajaxResponses.push(fixtures.fullDoc);
 
       var agent = new Hyperagent.Resource('http://haltalk.herokuapp.com/');
       assert.equal(this.ajaxCalls.length, 0);
@@ -55,9 +55,9 @@
     });
 
     it('should fetch the same resource only once', function (done) {
-      this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
+      this.ajaxResponses.push(fixtures.fullDoc);
       // Shouldn't be needed, but makes errors prettier.
-      this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
+      this.ajaxResponses.push(fixtures.fullDoc);
 
       var agent = new Hyperagent.Resource('http://haltalk.herokuapp.com/');
       assert.equal(this.ajaxCalls.length, 0);
@@ -74,8 +74,8 @@
     });
 
     it('should fetch the same resource again if forced', function (done) {
-      this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
-      this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
+      this.ajaxResponses.push(fixtures.fullDoc);
+      this.ajaxResponses.push(fixtures.fullDoc);
 
       var agent = new Hyperagent.Resource('http://haltalk.herokuapp.com/');
       assert.equal(this.ajaxCalls.length, 0);
@@ -90,7 +90,7 @@
 
     it('should load templated links twice for different params', function (done) {
       for (var i = 0; i < 3; i += 1) {
-        this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
+        this.ajaxResponses.push(fixtures.fullDoc);
       }
 
       var agent = new Hyperagent.Resource('http://haltalk.herokuapp.com/');
@@ -109,9 +109,9 @@
     });
 
     it('should not keep stale data from templated links', function (done) {
-      this.ajaxResponses.push(JSON.stringify({ title: 'mike' }));
-      this.ajaxResponses.push(JSON.stringify({ title: 'passy' }));
-      this.ajaxResponses.push(JSON.stringify(fixtures.fullDoc));
+      this.ajaxResponses.push({ title: 'mike' });
+      this.ajaxResponses.push({ title: 'passy' });
+      this.ajaxResponses.push(fixtures.fullDoc);
 
       var agent = new Hyperagent.Resource('http://haltalk.herokuapp.com/');
 

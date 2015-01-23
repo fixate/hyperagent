@@ -90,11 +90,6 @@
         this.agent = new Hyperagent.Resource({ url: 'http://example.com/' });
       });
 
-      it('should propagate properties via _parse', function () {
-        this.agent._parse(JSON.stringify({ title: 'Hello World' }));
-        assert(this.agent.props.title, 'Hello World');
-      });
-
       it('should be iterable', function () {
         this.agent._load({prop1: 1, prop2: 2, prop3: 3});
         var pairs = _.pairs(this.agent.props);
@@ -107,8 +102,8 @@
         this.agent = new Hyperagent.Resource({ url: 'http://example.com/' });
       });
 
-      it('should expose embedded after parsing', function () {
-        this.agent._parse(JSON.stringify(fixtures.embeddedOrders));
+      it('should expose embedded after loading', function () {
+        this.agent._load(fixtures.embeddedOrders);
         assert.equal(this.agent.embedded.single.props.title, 'yours truly');
         assert.equal(this.agent.embedded.orders.length, 2);
         assert.equal(this.agent.embedded.orders[0].props.status, 'shipped');
@@ -122,7 +117,7 @@
       });
 
       it('should have loaded embeds', function () {
-        this.agent._parse(JSON.stringify(fixtures.embeddedOrders));
+        this.agent._load(fixtures.embeddedOrders);
 
         assert(this.agent.embedded.single.loaded,
           'single should be marked as loaded');
@@ -131,14 +126,14 @@
       });
 
       it('should have the self url of the embedded resource', function () {
-        this.agent._parse(JSON.stringify(fixtures.embeddedOrders));
+        this.agent._load(fixtures.embeddedOrders);
 
         assert.equal(this.agent.embedded.single.url(),
           'http://example.com/self/');
       });
 
       it('should be iterable', function () {
-        this.agent._parse(JSON.stringify(fixtures.embeddedOrders));
+        this.agent._load(fixtures.embeddedOrders);
 
         var keys = Object.keys(this.agent.embedded);
         assert.deepEqual(keys, ['orders', 'single']);
