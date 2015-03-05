@@ -540,6 +540,10 @@ define("hyperagent/resource",
      * used URL or not.
      */
     Resource.prototype._navigateUrl = function _navigateUrl(value) {
+      if (this._navigated) {
+        return true;
+      }
+
       var newUrl = Resource.resolveUrl(this._options.url, value);
       if (newUrl !== this._options.url) {
         this._options.url = newUrl;
@@ -661,12 +665,13 @@ define("hyperagent/resource",
       // Store href for later expansion in case it's a templated URI.
       this.href = object.href;
       this.templated = object.templated;
+      this._navigated = false
 
       // The href is OPTIONAL, even for links.
       if (!this.href) {
         console.warn('Link object did not provide an `href`: ', object);
       } else if (!this.templated) {
-        this._navigateUrl(this.href);
+        this._navigated = this._navigateUrl(this.href);
       }
 
       this._load(object);
