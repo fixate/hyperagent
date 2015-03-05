@@ -693,6 +693,7 @@ define("hyperagent/resource",
     __exports__.Resource = Resource;
     __exports__.LazyResource = LazyResource;
     __exports__.LinkResource = LinkResource;
+    __exports__.EmbeddedResource = EmbeddedResource;
   });
 window.Hyperagent = requireModule('hyperagent');
 }());

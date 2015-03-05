@@ -379,3 +379,4 @@ LinkResource.prototype.toString = function () {
 exports.Resource = Resource;
 exports.LazyResource = LazyResource;
 exports.LinkResource = LinkResource;
+exports.EmbeddedResource = EmbeddedResource;
