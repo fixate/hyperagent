@@ -456,7 +456,7 @@ define("hyperagent/resource",
 
         // Don't access through this.links to avoid triggering recursions
         if (object._links.self) {
-          this._navigateUrl(object._links.self.href);
+          this._navigated = this._navigateUrl(object._links.self.href);
         }
 
         this.links = new LazyResource(this, object._links, {
