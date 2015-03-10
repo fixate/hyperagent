@@ -385,8 +385,8 @@ define("hyperagent/resource",
       }
 
       // Ensure link resource has navigated
-      if (!options.url && this instanceof LinkResource && this._links && this._links.self) {
-        this._navigated = this._navigateUrl(this._links.self.href);
+      if (!options.url && this instanceof LinkResource && this.links && this.links.self) {
+        this._navigated = this._navigateUrl(this.links.self.href);
       }
 
       // Pick only AJAX-relevant options.
