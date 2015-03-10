@@ -68,6 +68,11 @@ Resource.prototype.fetch = function fetch(options) {
     return deferred.promise;
   }
 
+  // Ensure link resource has navigated
+  if (!options.url && this instanceof LinkResource && this._links.self) {
+    this._navigated = this._navigateUrl(this._links.self.href);
+  }
+
   // Pick only AJAX-relevant options.
   var ajaxOptions = _.pick(this._options, 'headers', 'username',
       'password', 'url');
