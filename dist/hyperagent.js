@@ -375,7 +375,7 @@ define("hyperagent/resource",
      * Returns a promise on the this Resource instance.
      */
     Resource.prototype.fetch = function fetch(options) {
-      options = _.defaults(options || {}, { force: false, navigate: true });
+      options = _.defaults(options || {}, { force: false});
 
       if (this.loaded && !options.force) {
         // Could use Q sugar here, but that would break compatibility with other
@@ -513,6 +513,7 @@ define("hyperagent/resource",
     };
 
     Resource.prototype._load = function _load(object, options) {
+      options = _.extend(options || {}, {navigate: true});
       this._loadHooks.forEach(function (hook) {
         hook.bind(this)(object, options || {});
       }.bind(this));
