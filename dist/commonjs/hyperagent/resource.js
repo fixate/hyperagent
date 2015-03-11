@@ -197,7 +197,7 @@ Resource.prototype._loadProperties = function _loadProperties(object, options) {
 };
 
 Resource.prototype._load = function _load(object, options) {
-  options = _.extend(options || {}, {navigate: true});
+  options = _.defaults(options || {}, {navigate: true});
   this._loadHooks.forEach(function (hook) {
     hook.bind(this)(object, options || {});
   }.bind(this));
