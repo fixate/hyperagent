@@ -385,7 +385,9 @@ define("hyperagent/resource",
         return deferred.promise;
       }
 
-      if (this.links.self) {
+      // Only navigate on GET requests
+      var navigate = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
+      if (navigate && this.links.self) {
         this._navigateUrl(this.links.self.href);
       }
 
@@ -402,8 +404,8 @@ define("hyperagent/resource",
       }
 
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
-        var method = ajaxOptions.method || 'GET'
-        this._load(response, method.toUpperCase() == 'GET');
+        this._load(response);
+
         this.loaded = true;
 
         // Return the agent back.
@@ -451,18 +453,13 @@ define("hyperagent/resource",
     /**
      * Loads the Resource.links resources on creation of the object.
      */
-    Resource.prototype._loadLinks = function _loadLinks(object, navigate) {
+    Resource.prototype._loadLinks = function _loadLinks(object) {
       // HAL actually defines this as OPTIONAL
       if (object._links) {
         if (object._links.curies) {
           this._loadCuries(object._links.curies);
           // Don't expose these through the normal link interface.
           delete object._links.curies;
-        }
-
-        // Don't access through this.links to avoid triggering recursions
-        if (object._links.self && navigate) {
-          this._navigateUrl(object._links.self.href);
         }
 
         this.links = new LazyResource(this, object._links, {
