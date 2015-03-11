@@ -668,7 +668,7 @@ define("hyperagent/resource",
       // Inherit from Resource
       Resource.call(this, options);
 
-      this._load(object, false);
+      this._load(object);
 
       // Embedded resources are alsways considered as loaded.
       this.loaded = true;
