@@ -89,7 +89,6 @@ Resource.prototype.fetch = function fetch(options) {
 
   return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
     this._load(response);
-
     this.loaded = true;
 
     // Return the agent back.
@@ -146,14 +145,7 @@ Resource.prototype._loadLinks = function _loadLinks(object) {
       delete object._links.curies;
     }
 
-    // Force navigate a copy of this resource for the child to use
-    // and keep this resources url
-    var parentCopy = _.extend({}, this);
-    if (object._links.self) {
-      parentCopy._navigateUrl(object._links.self.href, {force: true});
-    }
-
-    this.links = new LazyResource(parentCopy, object._links, {
+    this.links = new LazyResource(this, object._links, {
       factory: Resource.factory(LinkResource),
       curies: this.curies
     });
@@ -235,13 +227,12 @@ Resource.resolveUrl = function _resolveUrl(oldUrl, newUrl) {
  */
 Resource.prototype._navigateUrl = function _navigateUrl(value, options) {
   options || (options = {});
-  if (this._navigated && !options.force) {
+  if (this.loaded && !options.force) {
     return false;
   }
 
   var newUrl = Resource.resolveUrl(this._options.url, value);
   if (newUrl !== this._options.url) {
-    this._navigated = true;
     this._options.url = newUrl;
     return true;
   }
@@ -367,7 +358,7 @@ function LinkResource(object, options) {
     this._navigateUrl(this.href);
   }
 
-  this._load(object, true);
+  this._load(object);
 }
 
 _.extend(LinkResource.prototype, Resource.prototype);
