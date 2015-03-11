@@ -384,11 +384,6 @@ define("hyperagent/resource",
         return deferred.promise;
       }
 
-      // Ensure link resource has navigated
-      if (!options.url && this instanceof LinkResource && this.links && this.links.self) {
-        this._navigated = this._navigateUrl(this.links.self.href);
-      }
-
       // Pick only AJAX-relevant options.
       var ajaxOptions = _.pick(this._options, 'headers', 'username',
           'password', 'url');
@@ -402,7 +397,7 @@ define("hyperagent/resource",
       }
 
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
-        this._load(response);
+        this._load(response, ajaxOptions.method == 'GET');
         this.loaded = true;
 
         // Return the agent back.
@@ -450,7 +445,7 @@ define("hyperagent/resource",
     /**
      * Loads the Resource.links resources on creation of the object.
      */
-    Resource.prototype._loadLinks = function _loadLinks(object) {
+    Resource.prototype._loadLinks = function _loadLinks(object, navigate) {
       // HAL actually defines this as OPTIONAL
       if (object._links) {
         if (object._links.curies) {
@@ -460,8 +455,8 @@ define("hyperagent/resource",
         }
 
         // Don't access through this.links to avoid triggering recursions
-        if (object._links.self) {
-          this._navigated = this._navigateUrl(object._links.self.href);
+        if (object._links.self && navigate) {
+          this._navigateUrl(object._links.self.href);
         }
 
         this.links = new LazyResource(this, object._links, {
@@ -495,9 +490,9 @@ define("hyperagent/resource",
       });
     };
 
-    Resource.prototype._load = function _load(object) {
+    Resource.prototype._load = function _load(object, navigate) {
       this._loadHooks.forEach(function (hook) {
-        hook.bind(this)(object);
+        hook.bind(this)(object, navigate);
       }.bind(this));
     };
 
@@ -545,10 +540,6 @@ define("hyperagent/resource",
      * used URL or not.
      */
     Resource.prototype._navigateUrl = function _navigateUrl(value) {
-      if (this._navigated) {
-        return true;
-      }
-
       var newUrl = Resource.resolveUrl(this._options.url, value);
       if (newUrl !== this._options.url) {
         this._options.url = newUrl;
@@ -655,7 +646,7 @@ define("hyperagent/resource",
       // Inherit from Resource
       Resource.call(this, options);
 
-      this._load(object);
+      this._load(object, false);
 
       // Embedded resources are alsways considered as loaded.
       this.loaded = true;
@@ -670,16 +661,13 @@ define("hyperagent/resource",
       // Store href for later expansion in case it's a templated URI.
       this.href = object.href;
       this.templated = object.templated;
-      this._navigated = false
 
       // The href is OPTIONAL, even for links.
-      if (!this.href) {
-        console.warn('Link object did not provide an `href`: ', object);
-      } else if (!this.templated) {
-        this._navigated = this._navigateUrl(this.href);
+      if (this.href && !this.templated) {
+        this._navigateUrl(this.href);
       }
 
-      this._load(object);
+      this._load(object, true);
     }
 
     _.extend(LinkResource.prototype, Resource.prototype);
