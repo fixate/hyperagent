@@ -72,6 +72,10 @@ define("/hyperagent/resource",
         return deferred.promise;
       }
 
+      if (this.links.self) {
+        this.navigateUrl(this.links.self.href);
+      }
+
       // Pick only AJAX-relevant options.
       var ajaxOptions = _.pick(this._options, 'headers', 'username',
           'password', 'url');
