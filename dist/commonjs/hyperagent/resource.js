@@ -88,13 +88,28 @@ Resource.prototype.fetch = function fetch(options) {
   // }
 
   return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
-    this._load(response);
+    this._load(response, options);
     this.loaded = true;
 
     // Return the agent back.
     return this;
   }.bind(this));
 };
+
+Resource.prototype.get = function (params, options) {
+  return this.fetch({params: params || {}}, options);
+}
+
+_.forEach(['post', 'patch', 'put', 'option', 'head', 'delete'], function(method) {
+  Resource.prototype[method] = function (data, ajaxOptions) {
+    return this.fetch({
+      force: true,
+      // We don't want the parent resource to navigate for a POST response
+      navigate: method != 'post',
+      ajax: angular.extend({method: method, data: data}, ajaxOptions)
+    });
+  };
+});
 
 Resource.prototype.url = function url() {
   return this._options.url;
@@ -136,7 +151,7 @@ Resource.prototype.related = function related(rel, params) {
 /**
  * Loads the Resource.links resources on creation of the object.
  */
-Resource.prototype._loadLinks = function _loadLinks(object) {
+Resource.prototype._loadLinks = function _loadLinks(object, options) {
   // HAL actually defines this as OPTIONAL
   if (object._links) {
     if (object._links.curies) {
@@ -145,8 +160,8 @@ Resource.prototype._loadLinks = function _loadLinks(object) {
       delete object._links.curies;
     }
 
-  // Don't access through this.links to avoid triggering recursions
-    if (object._links.self) {
+    // Don't access through this.links to avoid triggering recursions
+    if (options.navigate && object._links.self) {
       this._navigateUrl(object._links.self.href);
     }
 
@@ -160,7 +175,7 @@ Resource.prototype._loadLinks = function _loadLinks(object) {
 /**
  * Loads the Resource.embedded resources on creation of the object.
  */
-Resource.prototype._loadEmbedded = function _loadEmbedded(object) {
+Resource.prototype._loadEmbedded = function _loadEmbedded(object, options) {
   if (object._embedded) {
     this.embedded = new LazyResource(this, object._embedded, {
       factory: Resource.factory(EmbeddedResource),
@@ -173,7 +188,7 @@ Resource.prototype._loadEmbedded = function _loadEmbedded(object) {
 /**
  * Loads the Resource.props resources on creation of the object.
  */
-Resource.prototype._loadProperties = function _loadProperties(object) {
+Resource.prototype._loadProperties = function _loadProperties(object, options) {
   // Must come after _loadCuries
   this.props = new Properties(object, {
     curies: this.curies,
@@ -181,16 +196,16 @@ Resource.prototype._loadProperties = function _loadProperties(object) {
   });
 };
 
-Resource.prototype._load = function _load(object) {
+Resource.prototype._load = function _load(object, options) {
   this._loadHooks.forEach(function (hook) {
-    hook.bind(this)(object);
+    hook.bind(this)(object, options || {});
   }.bind(this));
 };
 
 /**
  * Saves a list of curies to the local curie store.
  */
-Resource.prototype._loadCuries = function _loadCuries(curies) {
+Resource.prototype._loadCuries = function _loadCuries(curies, options) {
   if (!Array.isArray(curies)) {
     console.warn('Expected `curies` to be an array, got instead: ', curies);
     return;
