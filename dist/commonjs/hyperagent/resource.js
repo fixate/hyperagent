@@ -81,7 +81,7 @@ Resource.prototype.fetch = function fetch(options) {
   }
 
   return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
-    method = ajaxOptions.method || 'GET'
+    var method = ajaxOptions.method || 'GET'
     this._load(response, method.toUpperCase() == 'GET');
     this.loaded = true;
 
