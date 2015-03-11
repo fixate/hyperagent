@@ -82,8 +82,8 @@ Resource.prototype.fetch = function fetch(options) {
   }
 
   // Only navigate on GET requests
-  var navigate = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
-  if (navigate && this.links.self) {
+  var navigable = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
+  if (navigable && this.links.self) {
     this._navigateUrl(this.links.self.href);
   }
 
@@ -146,7 +146,14 @@ Resource.prototype._loadLinks = function _loadLinks(object) {
       delete object._links.curies;
     }
 
-    this.links = new LazyResource(this, object._links, {
+    // Force navigate a copy of this resource for the child to use
+    // and keep this resources url
+    var parentCopy = _.extend({}, this);
+    if (object._links.self) {
+      parentCopy._navigateUrl(object._links.self.href, {force: true});
+    }
+
+    this.links = new LazyResource(parentCopy, object._links, {
       factory: Resource.factory(LinkResource),
       curies: this.curies
     });
