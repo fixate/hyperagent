@@ -148,7 +148,7 @@ define("/hyperagent/resource",
           delete object._links.curies;
         }
 
-        // Don't access through this.links to avoid triggering recursions
+      // Don't access through this.links to avoid triggering recursions
         if (object._links.self) {
           this._navigateUrl(object._links.self.href);
         }
@@ -233,12 +233,7 @@ define("/hyperagent/resource",
      * Returns a boolean indicating whether the navigation changed the previously
      * used URL or not.
      */
-    Resource.prototype._navigateUrl = function _navigateUrl(value, options) {
-      options || (options = {});
-      if (this.loaded && !options.force) {
-        return false;
-      }
-
+    Resource.prototype._navigateUrl = function _navigateUrl(value) {
       var newUrl = Resource.resolveUrl(this._options.url, value);
       if (newUrl !== this._options.url) {
         this._options.url = newUrl;
