@@ -73,7 +73,7 @@ define("/hyperagent/resource",
       }
 
       if (this.links.self) {
-        this.navigateUrl(this.links.self.href);
+        this._navigateUrl(this.links.self.href);
       }
 
       // Pick only AJAX-relevant options.
