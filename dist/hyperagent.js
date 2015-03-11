@@ -398,10 +398,10 @@ define("hyperagent/resource",
       }
 
       // Only navigate on GET requests
-      var navigable = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
-      if (navigable && this.links.self) {
-        this._navigateUrl(this.links.self.href);
-      }
+      // var navigable = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
+      // if (navigable && this.links.self) {
+      //   this._navigateUrl(this.links.self.href);
+      // }
 
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
         this._load(response);
