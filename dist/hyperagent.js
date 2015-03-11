@@ -397,7 +397,8 @@ define("hyperagent/resource",
       }
 
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
-        this._load(response, ajaxOptions.method == 'GET');
+        method = ajaxOptions.method || 'GET'
+        this._load(response, method.toUpperCase() == 'GET');
         this.loaded = true;
 
         // Return the agent back.
