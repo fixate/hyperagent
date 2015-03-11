@@ -385,15 +385,9 @@ define("hyperagent/resource",
         return deferred.promise;
       }
 
-      // Only navigate on GET requests
-      var navigate = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
-      if (navigate && this.links.self) {
-        this._navigateUrl(this.links.self.href);
-      }
-
       // Pick only AJAX-relevant options.
       var ajaxOptions = _.pick(this._options, 'headers', 'username',
-          'password', 'url');
+          'password', 'url', 'method');
 
       if (this._options.ajax) {
         _.extend(ajaxOptions, this._options.ajax);
@@ -401,6 +395,12 @@ define("hyperagent/resource",
 
       if (options.ajax) {
         _.extend(ajaxOptions, options.ajax);
+      }
+
+      // Only navigate on GET requests
+      var navigate = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
+      if (navigate && this.links.self) {
+        this._navigateUrl(this.links.self.href);
       }
 
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
@@ -493,9 +493,9 @@ define("hyperagent/resource",
       });
     };
 
-    Resource.prototype._load = function _load(object, navigate) {
+    Resource.prototype._load = function _load(object) {
       this._loadHooks.forEach(function (hook) {
-        hook.bind(this)(object, navigate);
+        hook.bind(this)(object);
       }.bind(this));
     };
 
@@ -542,14 +542,15 @@ define("hyperagent/resource",
      * Returns a boolean indicating whether the navigation changed the previously
      * used URL or not.
      */
-    Resource.prototype._navigateUrl = function _navigateUrl(value) {
-      if (this._lastNavigation == value) {
+    Resource.prototype._navigateUrl = function _navigateUrl(value, options) {
+      options || (options = {});
+      if (this._navigated && !options.force) {
         return false;
       }
 
       var newUrl = Resource.resolveUrl(this._options.url, value);
       if (newUrl !== this._options.url) {
-        this._lastNavigation = value;
+        this._navigated = true;
         this._options.url = newUrl;
         return true;
       }
