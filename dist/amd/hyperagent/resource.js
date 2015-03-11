@@ -62,7 +62,7 @@ define("/hyperagent/resource",
      * Returns a promise on the this Resource instance.
      */
     Resource.prototype.fetch = function fetch(options) {
-      options = _.defaults(options || {}, { force: false });
+      options = _.defaults(options || {}, { force: false, navigate: true });
 
       if (this.loaded && !options.force) {
         // Could use Q sugar here, but that would break compatibility with other
