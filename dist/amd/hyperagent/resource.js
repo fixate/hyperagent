@@ -374,7 +374,7 @@ define("/hyperagent/resource",
         this._navigateUrl(this.href);
       }
 
-      this._load(object);
+      // this._load(object);
     }
 
     _.extend(LinkResource.prototype, Resource.prototype);
