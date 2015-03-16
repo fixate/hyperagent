@@ -398,7 +398,7 @@ define("hyperagent/resource",
 
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
         var resource;
-        if (ajaxOptions.method.toUpperCase() === 'POST') {
+        if (ajaxOptions.method && ajaxOptions.method.toUpperCase() === 'POST') {
           // A resource was created so lets create a new resource
           resource = new Resource(this.url());
           resource._load(response);
