@@ -81,14 +81,14 @@ Resource.prototype.fetch = function fetch(options) {
     _.extend(ajaxOptions, options.ajax);
   }
 
-  return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
+  return loadAjax(ajaxOptions).then(function _ajaxThen(ajax) {
     var resource;
-    if (ajaxOptions.method && ajaxOptions.method.toUpperCase() === 'POST') {
+    if (ajax.status == 201) {
       // A resource was created so lets create a new resource
       resource = new Resource(this.url());
-      resource._load(response);
+      resource._load(ajax.data);
     } else {
-      this._load(response);
+      this._load(ajax.data);
       resource = this;
     }
 
