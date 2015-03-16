@@ -85,11 +85,18 @@ define("/hyperagent/resource",
       }
 
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
-        this._load(response, options);
-        this.loaded = true;
+        var resource;
+        if (ajaxOptions.method.toUpperCase() === 'POST') {
+          // A resource was created so lets create a new resource
+          resource = new Resource(this.url());
+          resource._load(response);
+        } else {
+          this._load(response);
+          resource = this;
+        }
 
         // Return the agent back.
-        return this;
+        return resource;
       }.bind(this));
     };
 
@@ -146,7 +153,7 @@ define("/hyperagent/resource",
     /**
      * Loads the Resource.links resources on creation of the object.
      */
-    Resource.prototype._loadLinks = function _loadLinks(object, options) {
+    Resource.prototype._loadLinks = function _loadLinks(object) {
       // HAL actually defines this as OPTIONAL
       if (object._links) {
         if (object._links.curies) {
@@ -170,7 +177,7 @@ define("/hyperagent/resource",
     /**
      * Loads the Resource.embedded resources on creation of the object.
      */
-    Resource.prototype._loadEmbedded = function _loadEmbedded(object, options) {
+    Resource.prototype._loadEmbedded = function _loadEmbedded(object) {
       if (object._embedded) {
         this.embedded = new LazyResource(this, object._embedded, {
           factory: Resource.factory(EmbeddedResource),
@@ -183,7 +190,7 @@ define("/hyperagent/resource",
     /**
      * Loads the Resource.props resources on creation of the object.
      */
-    Resource.prototype._loadProperties = function _loadProperties(object, options) {
+    Resource.prototype._loadProperties = function _loadProperties(object) {
       // Must come after _loadCuries
       this.props = new Properties(object, {
         curies: this.curies,
@@ -191,16 +198,18 @@ define("/hyperagent/resource",
       });
     };
 
-    Resource.prototype._load = function _load(object, options) {
+    Resource.prototype._load = function _load(object) {
       this._loadHooks.forEach(function (hook) {
-        hook.bind(this)(object, options || {});
+        hook.bind(this)(object);
       }.bind(this));
+
+      this.loaded = true;
     };
 
     /**
      * Saves a list of curies to the local curie store.
      */
-    Resource.prototype._loadCuries = function _loadCuries(curies, options) {
+    Resource.prototype._loadCuries = function _loadCuries(curies) {
       if (!Array.isArray(curies)) {
         console.warn('Expected `curies` to be an array, got instead: ', curies);
         return;
@@ -348,9 +357,6 @@ define("/hyperagent/resource",
       Resource.call(this, options);
 
       this._load(object);
-
-      // Embedded resources are alsways considered as loaded.
-      this.loaded = true;
     }
 
     _.extend(EmbeddedResource.prototype, Resource.prototype);
