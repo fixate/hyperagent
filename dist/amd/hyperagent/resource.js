@@ -84,12 +84,6 @@ define("/hyperagent/resource",
         _.extend(ajaxOptions, options.ajax);
       }
 
-      // Only navigate on GET requests
-      // var navigable = (ajaxOptions.method || 'GET').toUpperCase() == 'GET'
-      // if (navigable && this.links.self) {
-      //   this._navigateUrl(this.links.self.href);
-      // }
-
       return loadAjax(ajaxOptions).then(function _ajaxThen(response) {
         this._load(response, options);
         this.loaded = true;
@@ -107,8 +101,6 @@ define("/hyperagent/resource",
       Resource.prototype[method] = function (data, ajaxOptions) {
         return this.fetch({
           force: true,
-          // We don't want the parent resource to navigate for a POST response
-          navigate: method != 'post',
           ajax: angular.extend({method: method, data: data}, ajaxOptions)
         });
       };
@@ -164,7 +156,7 @@ define("/hyperagent/resource",
         }
 
         // Don't access through this.links to avoid triggering recursions
-        if (options.navigate && object._links.self) {
+        if (object._links.self) {
           this._navigateUrl(object._links.self.href);
         }
 
@@ -200,7 +192,6 @@ define("/hyperagent/resource",
     };
 
     Resource.prototype._load = function _load(object, options) {
-      options = _.defaults(options || {}, {navigate: true});
       this._loadHooks.forEach(function (hook) {
         hook.bind(this)(object, options || {});
       }.bind(this));
