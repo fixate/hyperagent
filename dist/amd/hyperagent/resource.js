@@ -100,8 +100,8 @@ define("/hyperagent/resource",
       }.bind(this));
     };
 
-    Resource.prototype.get = function (params, options) {
-      return this.fetch({params: params || {}}, options);
+    Resource.prototype.get = function (params, ajaxOptions) {
+      return this.fetch({force: true, ajax: angular.extend({ method: 'GET', params: params || {}}, ajaxOptions)});
     }
 
     _.forEach(['post', 'patch', 'put', 'option', 'head', 'delete'], function(method) {
